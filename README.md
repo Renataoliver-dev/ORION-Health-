@@ -1,474 +1,671 @@
-<div align="center">
+# ORION — Intelligent Biomechanical Analysis and Astronaut Health Monitoring
 
-# 🚀 HEALTH
-## Astronaut Health Monitoring System
+**NASA International Space Apps Challenge 2026 — Project HEALTH**
 
-### NASA Space Apps Challenge 2026
+ORION is an intelligent biomechanical analysis and health monitoring system developed for the NASA International Space Apps Challenge 2026. The project combines computer vision, machine learning, mathematical modeling, and wearable technology to support physical exercise monitoring during long-duration space missions.
 
-**Monitoring Astronaut Health and Well-Being Beyond Earth**
+The system was designed to address a significant challenge in human space exploration: maintaining astronauts' physical condition in microgravity, where the absence of normal gravitational loading contributes to muscle atrophy, bone density loss, and cardiovascular deconditioning.
 
-![NASA Space Apps Challenge](https://img.shields.io/badge/NASA-Space%20Apps%20Challenge%202026-blue)
-![Project](https://img.shields.io/badge/Project-HEALTH-brightgreen)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
-![License](https://img.shields.io/badge/License-MIT-green)
+ORION uses artificial intelligence to identify human body movements, calculate joint angles, and evaluate exercise execution in real time. By detecting postural deviations and providing immediate visual feedback, the system aims to help astronauts perform exercises more consistently and recognize potentially unsafe movement patterns.
 
-</div>
+The broader HEALTH project also includes a wearable heart rate monitoring component and a data visualization dashboard intended to consolidate physiological and biomechanical information.
+
+The objective is to investigate how these technologies can support astronaut autonomy, exercise monitoring, and physical well-being in environments where continuous supervision by medical or rehabilitation professionals may not be available.
 
 ---
 
-## 🌌 About the Project
+# 1. Project Overview
 
-**HEALTH** is an innovative astronaut health monitoring project developed for the **NASA International Space Apps Challenge 2026**.
+Long-duration space missions introduce physiological challenges that differ considerably from those experienced on Earth.
 
-The project aims to improve astronaut health, safety, and well-being during long-duration space missions.
+Under terrestrial conditions, gravity continuously imposes mechanical loads on the musculoskeletal system. These loads contribute to maintaining muscle strength, bone structure, and normal movement patterns.
 
-Space exploration exposes astronauts to unique physical and psychological challenges, including microgravity, isolation, sleep disturbances, cardiovascular changes, and muscle loss.
+In microgravity, this mechanical stimulus is significantly reduced. Over time, astronauts may experience decreased muscle mass, changes in muscle function, reduced bone mineral density, and alterations in cardiovascular regulation.
 
-Our solution proposes an intelligent health monitoring system that combines wearable technology, physiological sensors, data analysis, and an interactive dashboard.
+To reduce these effects, astronauts aboard the International Space Station follow structured exercise programs that include resistance and aerobic training.
 
-By continuously collecting and analyzing health information, HEALTH aims to help astronauts better understand their physical condition and maintain their well-being throughout space missions.
+One example is the Advanced Resistive Exercise Device (ARED), which allows astronauts to perform resistance exercises despite the absence of conventional gravitational loading.
 
----
+However, performing an exercise does not necessarily guarantee that it is being executed with appropriate movement mechanics.
 
-## 🎯 Project Mission
+Joint alignment, movement amplitude, body orientation, and the coordination between different body segments can influence exercise performance.
 
-Our mission is to develop an accessible, intelligent, and reliable system capable of monitoring astronaut health during space exploration.
+Incorrect execution may introduce undesirable mechanical loading or reduce the effectiveness of the intended movement.
 
-The project focuses on three fundamental pillars:
+ORION was developed to investigate whether artificial intelligence could provide an additional monitoring layer during these exercise sessions.
 
-- ❤️ Physical Health Monitoring
-- 🧠 Mental Health and Well-Being
-- 🤖 Intelligent Health Data Analysis
+Rather than relying exclusively on visual observation by another person, the system uses a camera to analyze movements automatically.
 
-We believe that protecting human health is essential for the future of space exploration.
+The software identifies anatomical reference points, reconstructs a simplified representation of the human skeleton, and calculates joint angles using vector mathematics.
 
----
+These measurements are compared with predefined biomechanical criteria to determine whether the observed movement is consistent with the expected exercise pattern.
 
-## 🚀 The Challenge
+When a deviation is detected, the system provides visual feedback that allows the user to recognize the issue and adjust their movement.
 
-Astronauts face several health risks during space missions.
-
-Some of the most significant challenges include:
-
-### 🦴 Bone Density Loss
-
-Microgravity reduces mechanical loading on bones, contributing to bone mineral density loss.
-
-### 💪 Muscle Atrophy
-
-Without Earth's gravity, muscles experience reduced mechanical demand, potentially resulting in decreased strength and endurance.
-
-### ❤️ Cardiovascular Changes
-
-Spaceflight can alter cardiovascular regulation and physical conditioning.
-
-### 😴 Sleep Disorders
-
-Irregular schedules, environmental conditions, and circadian rhythm disruption can affect sleep quality.
-
-### 🧠 Psychological Stress
-
-Isolation, confinement, and demanding mission conditions can influence psychological well-being.
-
-### 🩺 Limited Medical Assistance
-
-During deep-space missions, communication delays can make immediate medical support from Earth difficult.
-
-These challenges highlight the importance of developing autonomous health monitoring technologies.
+This approach is intended to support exercise monitoring rather than replace medical evaluation or professional supervision.
 
 ---
 
-## 💡 Our Solution
+# 2. System Operation
 
-HEALTH proposes an integrated health monitoring platform designed specifically for astronauts.
+The ORION software is built around a real-time computer vision pipeline.
 
-The system combines wearable sensors, intelligent software, and data visualization tools to provide information about astronaut health.
+Its primary input is a video stream captured through a webcam or another compatible camera.
 
-### Main Components
+Each video frame is processed by a pose estimation model based on Ultralytics YOLO-Pose.
 
-**1. Smart Wearable Device**
+The model identifies the person in the image and estimates the positions of anatomical keypoints.
 
-A wearable device designed to collect physiological measurements.
+Unlike conventional image classification systems, which primarily determine what objects appear in an image, pose estimation models provide spatial information about the human body.
 
-**2. Health Monitoring Software**
+ORION uses this information to evaluate movement geometry.
 
-A software platform responsible for receiving, processing, and organizing health information.
+The processing pipeline consists of image acquisition, pose estimation, anatomical point extraction, mathematical analysis, exercise evaluation, and visual feedback.
 
-**3. Intelligent Data Analysis**
+## 2.1 Video Acquisition and Processing
 
-Algorithms designed to identify patterns and unusual variations in physiological measurements.
+OpenCV is responsible for capturing and processing video frames.
 
-**4. Interactive Dashboard**
+During an exercise session, the camera continuously provides images that are passed to the pose estimation model.
 
-A visual interface that allows astronauts to monitor their health information.
+The software analyzes each frame to determine the position of the user and the anatomical landmarks required for biomechanical calculations.
 
-**5. Well-Being Monitoring**
+The system must account for variations in lighting, camera distance, body orientation, and partial occlusion.
 
-A dedicated module for monitoring psychological well-being, stress, fatigue, and sleep quality.
+These conditions are particularly important because the accuracy of joint-angle calculations depends on the quality of the estimated anatomical positions.
 
----
+## 2.2 Human Pose Estimation
 
-## ⚙️ Proposed Features
+ORION uses a custom pose estimation model configured to identify 15 anatomical keypoints.
 
-### ❤️ Heart Rate Monitoring
+The project adopts the following convention:
 
-Continuous or periodic heart rate monitoring using compatible sensors.
+| Index | Anatomical Keypoint |
+|-------|---------------------|
+| 0 | Head |
+| 1 | Left shoulder |
+| 2 | Right shoulder |
+| 3 | Left elbow |
+| 4 | Right elbow |
+| 5 | Left wrist |
+| 6 | Right wrist |
+| 7 | Left hip |
+| 8 | Right hip |
+| 9 | Left knee |
+| 10 | Right knee |
+| 11 | Left ankle |
+| 12 | Right ankle |
+| 13 | Left hand |
+| 14 | Right hand |
 
-Potential capabilities:
+The same anatomical convention was maintained throughout all three model training stages.
 
-- Heart rate visualization
-- Resting heart rate analysis
-- Exercise heart rate monitoring
-- Historical cardiovascular trends
-- Personalized monitoring alerts
+This consistency is important because changing the meaning or order of keypoints between datasets would introduce errors into the learning process.
 
-### 🫁 Blood Oxygen Monitoring
+The original YOLOv8 pose model uses 17 COCO keypoints. Therefore, a conversion procedure was required to adapt the pretrained model to ORION's custom 15-point representation.
 
-Monitoring of blood oxygen saturation (SpO₂) using compatible sensors.
+The left and right anatomical conventions were also standardized to avoid inconsistencies between datasets.
 
-The system aims to provide accessible respiratory-related information while accounting for sensor limitations.
+During the multi-angle calibration stage, the hand keypoints were refined using corresponding MediaPipe landmarks.
 
-### 😴 Sleep Monitoring
+Once the keypoints are detected, the software connects relevant anatomical points to represent body segments.
 
-Analysis of sleep patterns and rest periods.
-
-Potential features:
-
-- Sleep duration tracking
-- Sleep schedule monitoring
-- Sleep history
-- Sleep consistency analysis
-- Self-reported sleep quality
-
-### 🧠 Mental Health and Well-Being
-
-A dedicated module focused on psychological well-being.
-
-Potential features:
-
-- Daily mood assessments
-- Stress level questionnaires
-- Mental fatigue monitoring
-- Emotional well-being tracking
-- General wellness recommendations
-
-### 💪 Physical Activity Monitoring
-
-Monitoring physical activity and exercise participation.
-
-Potential measurements include:
-
-- Exercise duration
-- Activity frequency
-- Movement patterns
-- Exercise history
-- Recovery periods
-
-### 🤖 Intelligent Health Analysis
-
-Data analysis algorithms may be used to identify unusual patterns and changes in physiological indicators.
-
-Potential capabilities:
-
-- Anomaly detection
-- Personalized health baselines
-- Historical trend analysis
-- Monitoring notifications
-- Data visualization
-
-Automated analysis is intended to support health awareness and does not replace professional medical evaluation.
+This representation allows the system to evaluate relationships between joints during movement.
 
 ---
 
-## 🏗️ System Architecture
+# 3. Mathematical Biomechanical Analysis
 
-The proposed system architecture consists of five main layers.
+One of ORION's main technical components is its ability to transform anatomical coordinates into quantitative movement measurements.
+
+Pose estimation provides the coordinates of anatomical keypoints, but these coordinates alone do not indicate whether an exercise is being performed correctly.
+
+To evaluate movement, the system applies vector mathematics and trigonometric calculations.
+
+## 3.1 Joint-Angle Calculation
+
+A joint angle can be estimated using three anatomical points.
+
+For example, knee flexion can be calculated using the hip, knee, and ankle coordinates.
+
+Let:
+
+- A represent the hip.
+- B represent the knee.
+- C represent the ankle.
+
+Two vectors are constructed using the knee as their common origin:
+
+$$
+\vec{u} = A - B
+$$
+
+$$
+\vec{v} = C - B
+$$
+
+The angle between these vectors is calculated using the dot product:
+
+$$
+\theta =
+\cos^{-1}
+\left(
+\frac{\vec{u}\cdot\vec{v}}
+{\|\vec{u}\|\|\vec{v}\|}
+\right)
+$$
+
+Where:
+
+- \(\theta\) represents the estimated joint angle.
+- \(\vec{u}\) and \(\vec{v}\) represent the body-segment vectors.
+- \(\vec{u}\cdot\vec{v}\) represents their dot product.
+- \(\|\vec{u}\|\) and \(\|\vec{v}\|\) represent their magnitudes.
+
+The resulting angle can be converted from radians to degrees.
+
+This method allows the software to estimate joint flexion and extension from the detected anatomical coordinates.
+
+The calculations are based on the two-dimensional projection of the body in the camera image.
+
+Consequently, the estimated angles may differ from actual three-dimensional joint angles when body segments are rotated relative to the camera.
+
+For this reason, camera positioning and body orientation are important considerations in the system.
+
+## 3.2 Exercise Evaluation
+
+After calculating the required angles, ORION compares the measurements with predefined exercise criteria.
+
+During a squat, for example, the software can examine knee flexion, hip movement, and trunk inclination.
+
+The project documentation includes example monitoring thresholds of approximately 15 degrees for leg asymmetry and 45 degrees for trunk inclination.
+
+These values are used as configured criteria within the prototype and should not be interpreted as universally validated clinical limits.
+
+When a measurement exceeds the corresponding criterion, the system can generate a visual warning.
+
+This allows the user to identify a possible movement deviation while the exercise is being performed.
+
+## 3.3 Measurement Stability
+
+An important challenge in camera-based biomechanical analysis is that small errors in anatomical keypoint positions can influence calculated joint angles.
+
+The project uses several techniques intended to reduce this problem.
+
+Higher-resolution images preserve more information about body segments, particularly when the user is positioned farther from the camera.
+
+Consistent anatomical labeling reduces systematic errors caused by incorrectly assigned body sides.
+
+MediaPipe-based landmark refinement can help stabilize keypoint positions during dataset preparation.
+
+The system also considers filtering geometrically unreliable frames, particularly when body segments overlap in the two-dimensional image.
+
+Temporal stabilization is used to evaluate movement patterns across multiple frames instead of relying exclusively on isolated measurements.
+
+These techniques are intended to improve the consistency of movement analysis.
+
+However, their effectiveness must be evaluated experimentally under different camera and exercise conditions.
+
+---
+
+# 4. Artificial Intelligence Model Development
+
+The development of ORION required adapting a human pose estimation model to different visual environments.
+
+A model trained exclusively on terrestrial exercise images may have difficulty interpreting astronaut movements in microgravity.
+
+The appearance of the human body, the direction of movement, and the relationship between the camera and the subject can differ substantially between these environments.
+
+To address this challenge, ORION adopted a three-stage incremental learning process.
+
+Each stage begins with weights obtained from the previous training stage.
+
+This strategy allows the model to progressively incorporate new data without restarting the learning process from randomly initialized parameters.
+
+The training sequence was:
+
+**Ground Training → Space Adaptation → Multi-Angle Calibration**
+
+The final model was developed through this cumulative process.
+
+## 4.1 Stage One — Ground Training
+
+The first training stage established the model's initial understanding of human anatomy and exercise movements.
+
+Training began with the pretrained `yolov8n-pose.pt` model.
+
+This model was originally trained using the COCO dataset and configured to identify 17 human anatomical keypoints.
+
+Because ORION uses a custom 15-keypoint representation, the original annotations were converted using a mapping procedure.
+
+The dataset consisted of 183 training images and five validation images.
+
+The images represented squat exercises performed under controlled terrestrial conditions.
+
+Training was configured with the following parameters:
+
+| Parameter | Configuration |
+|-----------|---------------|
+| Initial model | yolov8n-pose.pt |
+| Training images | 183 |
+| Validation images | 5 |
+| Epochs | 40 |
+| Image resolution | 640 pixels |
+| Batch size | 16 |
+| Cosine learning rate | Enabled |
+| Close mosaic | 10 |
+| Random seed | 42 |
+
+The purpose of this stage was to establish a foundation for detecting the human body and estimating anatomical landmarks.
+
+During training, the model progressively reduced its prediction errors.
+
+The training bounding-box loss decreased from 2.0069 to 1.1043.
+
+The classification loss decreased from 1.7195 to 0.8265.
+
+The pose estimation loss decreased from 9.2416 to 2.7832.
+
+The model achieved a bounding-box mAP50 of 0.995.
+
+These results indicated that the model learned to localize people effectively within the controlled terrestrial dataset.
+
+The resulting weights were then used as the starting point for the space adaptation stage.
+
+## 4.2 Stage Two — Space Adaptation
+
+The second stage introduced images representing astronaut exercise conditions aboard the International Space Station.
+
+The main challenge was the difference between terrestrial exercise imagery and astronaut movements in microgravity.
+
+In space, astronauts may appear in unusual orientations, and their movements can occur without the gravitational references normally present on Earth.
+
+The available space dataset contained 86 frames extracted from astronaut exercise videos.
+
+Because these frames did not initially include manually annotated anatomical keypoints, the project adopted a pseudo-labeling strategy.
+
+A generic pretrained YOLO-Pose model was used as a teacher to generate pose annotations.
+
+The teacher model's 17 keypoints were then converted into ORION's custom 15-keypoint representation.
+
+Frames where the teacher model could not identify a suitable pose were excluded from the pseudo-labeling process.
+
+The training dataset combined the original terrestrial images with the additional space-related frames.
+
+Training continued from the weights obtained during the first stage.
+
+| Parameter | Configuration |
+|-----------|---------------|
+| Initial weights | Ground-trained model |
+| Ground images | 183 |
+| Additional space frames | 86 |
+| Maximum epochs | 25 |
+| Executed epochs | 16 |
+| Image resolution | 640 pixels |
+| Batch size | 16 |
+| Early stopping patience | 10 |
+| Close mosaic | 5 |
+
+The training process ended automatically after 16 epochs because the early-stopping criterion was reached.
+
+This indicated that the monitored validation performance had stopped improving sufficiently under the configured conditions.
+
+The validation bounding-box loss decreased from 1.9574 to 0.9948.
+
+The training pose loss decreased from 6.0486 to 4.6100.
+
+The best bounding-box mAP50 reached 0.9881.
+
+These results demonstrated that the model could be adapted to the additional visual conditions represented in the space dataset.
+
+However, the use of automatically generated annotations introduced an important limitation.
+
+Pseudo-labels may contain errors inherited from the teacher model.
+
+Consequently, additional manual annotation and validation would be necessary to establish the accuracy of pose estimation under actual spaceflight conditions.
+
+## 4.3 Stage Three — Multi-Angle Calibration
+
+The third training stage focused on improving the model's performance under practical camera conditions.
+
+During real exercise monitoring, the user may be recorded from different perspectives.
+
+Frontal, lateral, and rear views can produce significantly different two-dimensional representations of the same movement.
+
+Furthermore, the distance between the user and the camera influences the number of pixels representing each body segment.
+
+When a person occupies only a small portion of the image, reducing the frame resolution may remove important anatomical details.
+
+To address these problems, a custom multi-angle dataset was created.
+
+The dataset included 159 training images and 35 validation images captured from different perspectives.
+
+The labeling process combined the space-adapted YOLO-Pose model with MediaPipe Pose.
+
+MediaPipe provided additional anatomical landmarks that were used to refine the custom keypoint annotations.
+
+Training resolution was increased to 960 pixels.
+
+This allowed the model to process images containing more spatial information about the human body.
+
+| Parameter | Configuration |
+|-----------|---------------|
+| Initial weights | Space-adapted model |
+| Custom training images | 159 |
+| Custom validation images | 35 |
+| Epochs | 25 |
+| Image resolution | 960 pixels |
+| Batch size | 8 |
+| Optimizer | AdamW |
+| Cosine learning rate | Enabled |
+| Close mosaic | 5 |
+
+The training pose loss decreased from 5.7964 to 3.6721.
+
+The classification loss decreased from 1.3457 to 0.7890.
+
+The validation bounding-box loss decreased from 1.5138 to 0.9971.
+
+The model achieved a bounding-box mAP50 of 0.9858 and a bounding-box recall of 1.00.
+
+The recall result indicates that all annotated people in the corresponding validation set were successfully detected.
+
+However, this result applies to the evaluated dataset and does not establish perfect detection performance in all operating conditions.
+
+The final stage completed the documented incremental training process.
+
+---
+
+# 5. Training Results and Model Evaluation
+
+The model was evaluated using the metrics generated during the three training stages.
+
+The primary measurements included bounding-box loss, classification loss, pose loss, mean average precision, and recall.
+
+Bounding-box loss measures errors associated with predicting the location and dimensions of a person's bounding box.
+
+Classification loss evaluates the model's classification predictions.
+
+Pose loss measures errors associated with anatomical keypoint estimation.
+
+Mean average precision evaluates detection performance under defined matching criteria.
+
+Recall measures the proportion of relevant objects successfully detected.
+
+The principal results are summarized below.
+
+| Metric | Ground | Space | Multi-Angle |
+|--------|--------|-------|-------------|
+| Executed epochs | 40 | 16 | 25 |
+| Image resolution | 640 | 640 | 960 |
+| Final training box loss | 1.1043 | 1.2579 | 1.1517 |
+| Final validation box loss | 1.0301 | 0.9948 | 0.9971 |
+| Final training pose loss | 2.7832 | 4.6100 | 3.6721 |
+| Final validation pose loss | 2.4977 | 5.9152 | 4.4940 |
+| Final training classification loss | 0.8265 | 1.0402 | 0.7890 |
+| Bounding-box mAP50 | 0.9950 | 0.9580 | 0.9858 |
+| Bounding-box mAP50-95 | 0.7121 | 0.6917 | 0.7113 |
+| Bounding-box recall | 1.0000 | 0.9167 | 1.0000 |
+
+The results show that the training losses generally decreased during each stage.
+
+However, metrics obtained from different datasets should not be interpreted as directly equivalent measures of performance.
+
+The space dataset introduced additional visual complexity, while the custom dataset focused on practical camera perspectives.
+
+The project documentation also reports lower pose mAP50-95 values than bounding-box mAP values.
+
+This distinction is important because successful person detection does not necessarily imply equally accurate anatomical keypoint estimation.
+
+For biomechanical applications, the accuracy of calculated joint angles is particularly relevant.
+
+The project therefore considers angular error an important evaluation target.
+
+## 5.1 Angular Error Analysis
+
+The development documentation uses an approximate relationship between keypoint localization error and angular uncertainty:
+
+$$
+\Delta\theta \approx \arctan\left(\frac{\delta}{L}\right)
+$$
+
+Where:
+
+- \(\Delta\theta\) represents an approximate angular deviation.
+- \(\delta\) represents the keypoint localization error in pixels.
+- \(L\) represents the length of the body segment in pixels.
+
+The documentation considers illustrative segment lengths between 250 and 350 pixels and localization errors between two and five pixels.
+
+Under these assumptions, the approximation produces relatively small angular deviations.
+
+However, this relationship is a simplified estimate.
+
+Actual joint-angle error depends on the positions of multiple keypoints, camera perspective, body orientation, and the propagation of measurement errors through the angle calculation.
+
+The assumed pixel errors have not been established as independently measured ground-truth errors for all operating conditions.
+
+Therefore, direct comparison against reference motion-capture measurements remains necessary before making definitive accuracy claims.
+
+---
+
+# 6. Practical Prototype Testing
+
+After the model training stages, ORION was evaluated through practical exercise demonstrations.
+
+The prototype used a camera to capture human movements and process them through the trained pose estimation model.
+
+During these sessions, the software identified anatomical landmarks and displayed the corresponding body structure.
+
+The biomechanical analysis component calculated joint angles and evaluated movement execution against configured criteria.
+
+When the movement met the expected conditions, the interface indicated that the exercise was being performed correctly.
+
+When a deviation was detected, the software displayed a warning.
+
+These demonstrations provided an initial practical evaluation of the system's intended functionality.
+
+They also demonstrated the interaction between pose estimation, numerical calculations, and real-time feedback.
+
+The testing process highlighted several factors that influence performance, including camera positioning, anatomical visibility, image resolution, and movement orientation.
+
+Although the prototype demonstrated the expected workflow, the available documentation does not establish comprehensive testing across large participant populations or controlled comparisons with clinical motion-analysis equipment.
+
+Additional experiments will be required to determine the system's measurement reliability and generalization capabilities.
+
+---
+
+# 7. Wearable Monitoring and Health Dashboard
+
+The broader HEALTH project combines ORION's biomechanical analysis with a proposed wearable monitoring system.
+
+The wearable component is intended to collect heart rate measurements during physical activity.
+
+Heart rate monitoring provides information about cardiovascular response and may help identify variations that deserve additional attention.
+
+The project's monitoring concept includes detecting atypical heart rate changes and notifying the astronaut when predefined criteria are met.
+
+This information is intended to complement the camera-based analysis.
+
+While ORION evaluates how an exercise is performed, the wearable device provides information about the user's physiological response.
+
+A data visualization dashboard is also part of the proposed architecture.
+
+Its purpose is to organize the information generated by the monitoring components into an accessible interface.
+
+The dashboard is intended to consolidate exercise performance, movement accuracy, physiological measurements, and monitoring notifications.
+
+This approach may help users examine how their exercise performance changes over time.
+
+The wearable device and dashboard are components of the broader system concept, and their implementation status should be distinguished from the documented computer vision training and prototype tests.
+
+---
+
+# 8. Software Architecture
+
+ORION separates real-time biomechanical processing from structured session reporting.
+
+The video processing layer is responsible for acquiring images and executing pose estimation.
+
+The mathematical analysis layer receives the anatomical coordinates and calculates joint angles.
+
+The exercise evaluation layer compares these measurements with configured movement criteria.
+
+The visualization layer presents the results to the user.
+
+Finally, the reporting layer organizes session information for later analysis.
+
+The `SessionReporter` class is responsible for exporting structured session data in JSON format.
+
+This separation allows the system to perform computationally demanding operations locally while maintaining records that may support future integrations.
+
+The overall HEALTH architecture can be represented as follows:
 
 ```mermaid
 flowchart TD
-    A[Wearable Sensors] --> B[Data Acquisition]
-    B --> C[Data Processing]
-    C --> D[Local Database]
-    C --> E[Health Analysis Engine]
-    E --> F[Monitoring Dashboard]
-    E --> G[Health Alerts]
-    D --> F
-    F --> H[Astronaut]
-    G --> H
+    A[Camera] --> B[OpenCV Video Processing]
+    B --> C[YOLO-Pose Model]
+    C --> D[15 Anatomical Keypoints]
+    D --> E[Vector and Joint-Angle Calculations]
+    E --> F[Exercise Evaluation]
+    F --> G[Real-Time Visual Feedback]
+    F --> H[SessionReporter]
+    H --> I[JSON Session Reports]
+
+    J[Wearable Heart Rate Monitoring] --> K[Health Monitoring Integration]
+    I --> K
+    K --> L[Health Dashboard]
 ```
 
-### Architecture Overview
+The camera-based biomechanical pipeline is the main documented software component.
 
-**Data Acquisition**
-
-Collects physiological information from compatible sensors.
-
-**Data Processing**
-
-Validates, filters, and organizes incoming measurements.
-
-**Data Storage**
-
-Stores health information for historical analysis.
-
-**Health Analysis**
-
-Evaluates physiological trends and predefined monitoring conditions.
-
-**User Interface**
-
-Displays measurements, historical information, and monitoring notifications.
+The wearable monitoring and integrated dashboard represent the broader system architecture and require their own implementation and validation processes.
 
 ---
 
-## 🛠️ Proposed Technologies
+# 9. Technologies and Development Environment
 
-The following technologies are being considered for the system.
+The project uses Python as its primary programming language.
+
+Ultralytics YOLO-Pose provides the neural network architecture used for detecting people and estimating anatomical keypoints.
+
+OpenCV handles video acquisition, image processing, and the rendering of visual information.
+
+NumPy supports the numerical calculations required for vector operations and joint-angle estimation.
+
+MediaPipe Pose was used during dataset preparation to assist with anatomical landmark refinement.
+
+JSON is used to export structured exercise session information.
+
+Development was carried out in a Linux environment, including Ubuntu and Kubuntu, with Visual Studio Code used as a development tool.
 
 | Technology | Purpose |
 |------------|---------|
-| Python | Data processing and analysis |
-| JavaScript | Frontend development |
-| HTML5 | Interface structure |
-| CSS3 | Interface styling |
-| FastAPI | Backend API |
-| SQLite | Local data storage |
-| Pandas | Data analysis |
-| NumPy | Numerical processing |
-| Scikit-learn | Machine learning |
-| Chart.js | Health data visualization |
-| Bluetooth Low Energy | Wearable communication |
+| Python | Core software development |
+| Ultralytics YOLO-Pose | Human pose estimation |
+| OpenCV | Video acquisition and image processing |
+| NumPy | Vector mathematics and numerical calculations |
+| MediaPipe Pose | Anatomical landmark refinement |
+| JSON | Structured session reporting |
+| Ubuntu / Kubuntu | Development environment |
+| Visual Studio Code | Code development and debugging |
 
-The final technology stack will depend on implementation requirements and available hardware.
+The architecture prioritizes local processing because continuous dependence on external computing services may be impractical in remote or spaceflight environments.
 
 ---
 
-## 🧠 Well-Being Monitoring System
+# 10. Limitations and Future Development
 
-Mental health is an essential aspect of astronaut safety and mission performance.
+Although the project has demonstrated promising prototype functionality, several limitations remain.
 
-Long-duration missions can expose astronauts to isolation, confinement, stress, and irregular sleep schedules.
+The training and validation datasets are relatively small, particularly for the terrestrial and space adaptation stages.
 
-HEALTH proposes a well-being monitoring module designed to support psychological health awareness.
+The use of pseudo-labels also introduces uncertainty because automatically generated annotations may contain errors.
 
-### Daily Wellness Assessment
+Another important limitation is the use of two-dimensional camera images for biomechanical analysis.
 
-Astronauts may complete short daily questionnaires evaluating:
+Joint angles estimated from a single camera can be affected by perspective distortion, occlusion, and movement outside the image plane.
 
-- Mood
-- Stress
-- Energy levels
-- Mental fatigue
-- Sleep quality
-- General well-being
+The current results therefore cannot establish clinical-grade measurement accuracy.
 
-### Wellness Dashboard
+Furthermore, training on images extracted from astronaut videos does not demonstrate that the software has been deployed or validated aboard the International Space Station.
 
-The platform may display historical trends related to psychological well-being.
+Future development should include larger and more diverse datasets, manual validation of anatomical annotations, and controlled comparisons with reference biomechanical measurement systems.
 
-### Personalized Recommendations
+Additional work should also investigate performance under different lighting conditions, camera positions, exercise types, and participant characteristics.
 
-The system may suggest general wellness activities based on user-reported information.
+The integration between wearable monitoring, exercise analysis, and the health dashboard represents another important development direction.
 
-Examples include:
-
-- Following regular sleep schedules
-- Practicing approved relaxation techniques
-- Maintaining physical activity
-- Taking scheduled rest periods
-- Contacting medical support when necessary
-
-These recommendations are not intended to diagnose or treat medical conditions.
+For eventual use in spaceflight operations, the system would require extensive reliability testing, medical validation, cybersecurity assessment, and evaluation against mission-specific requirements.
 
 ---
 
-## 🔒 Security and Privacy
+# 11. Potential Applications
 
-Astronaut health information must be protected.
+ORION was developed primarily to investigate astronaut exercise monitoring, but its underlying approach may also be useful in terrestrial environments.
 
-The proposed system includes the following security requirements:
+In rehabilitation settings, camera-based movement analysis could provide additional information about exercise execution.
 
-- Secure authentication
-- Encrypted data storage
-- Protected communication
-- Role-based access control
-- Data integrity verification
-- Secure local backups
-- Controlled access to medical information
+In physical training, the system could help users observe movement patterns and identify deviations from configured criteria.
 
-Privacy and security are fundamental aspects of the system architecture.
+In remote environments, automated monitoring tools may provide useful information when continuous in-person supervision is unavailable.
 
----
+For space exploration, the long-term objective is to investigate whether intelligent biomechanical monitoring can support astronauts during exercise routines designed to counteract the effects of microgravity.
 
-## 🌐 Offline Functionality
+The project is not intended to replace qualified healthcare professionals or established exercise protocols.
 
-Communication with Earth may be delayed or temporarily unavailable during space missions.
-
-HEALTH is designed around a local-first approach.
-
-The proposed system should support:
-
-- Local health data storage
-- Offline health monitoring
-- Offline dashboard access
-- Local alert generation
-- Data synchronization when connectivity becomes available
-
-This architecture aims to improve astronaut autonomy during long-duration missions.
+Instead, it explores how artificial intelligence can complement existing approaches to movement monitoring and physical rehabilitation.
 
 ---
 
-## 🧪 Testing and Validation
+# 12. Conclusion
 
-The project development process includes several proposed testing stages.
+ORION demonstrates the application of computer vision and machine learning to real-time biomechanical analysis.
 
-### Functional Testing
+The system combines anatomical keypoint detection, vector-based joint-angle calculations, movement evaluation, and visual feedback within a single software pipeline.
 
-Verify that software components operate correctly.
+A significant part of the development process involved adapting the pose estimation model to different visual environments.
 
-### Sensor Testing
+The three-stage training strategy incorporated terrestrial exercise images, astronaut exercise frames, and custom multi-angle recordings.
 
-Evaluate sensor communication and measurement collection.
+This approach allowed the model to progressively learn from datasets representing different movement conditions and camera perspectives.
 
-### Data Processing Testing
+The documented prototype tests demonstrated the system's ability to identify body movements, calculate biomechanical measurements, and generate exercise feedback according to predefined criteria.
 
-Validate the accuracy and consistency of processed information.
+The broader HEALTH project extends this concept through wearable heart rate monitoring and a proposed health dashboard.
 
-### User Interface Testing
+Together, these components establish a foundation for further research into intelligent exercise monitoring for astronauts.
 
-Evaluate usability and accessibility.
-
-### Security Testing
-
-Identify vulnerabilities and verify data protection mechanisms.
-
-### Health Analysis Validation
-
-Evaluate monitoring algorithms using appropriate datasets.
-
-**Important:** The project is a prototype concept and is not currently presented as a certified medical device or flight-qualified system.
+Although additional validation is required before operational or clinical use, ORION represents a practical exploration of how artificial intelligence and biomechanical analysis can contribute to human health monitoring during future space missions.
 
 ---
 
-## 📈 Expected Impact
+# Project Information
 
-HEALTH aims to contribute to safer and more sustainable human space exploration.
+**Project:** ORION — Intelligent Biomechanical Analysis and Astronaut Health Monitoring
 
-Potential benefits include:
+**Team:** HEALTH
 
-### 🚀 Greater Astronaut Autonomy
+**Event:** NASA International Space Apps Challenge 2026
 
-Providing astronauts with accessible information about their health.
+**Project Demonstration:**  
+[Watch the ORION Demonstration](https://youtu.be/MFa6idGf-oI)
 
-### ❤️ Improved Health Awareness
+**Source Code:**  
+[ORION Health Repository](https://github.com/lavynnemarianne13-alt/ORION-Health-)
 
-Supporting the monitoring of physiological and psychological indicators.
-
-### 📊 Better Data Organization
-
-Combining multiple health measurements into a unified platform.
-
-### 🧠 Psychological Well-Being Support
-
-Encouraging regular monitoring of stress, fatigue, and emotional well-being.
-
-### 🌍 Applications on Earth
-
-Technologies developed for astronaut health monitoring may also inspire terrestrial applications in:
-
-- Remote healthcare
-- Wearable health technology
-- Occupational health
-- Isolated environments
-- Personal wellness monitoring
-
----
-
-## 🔮 Future Improvements
-
-Future development may include:
-
-- Advanced wearable sensor integration
-- Personalized machine learning models
-- Improved psychological well-being assessments
-- Exercise monitoring integration
-- Predictive trend analysis
-- Enhanced offline functionality
-- Medical team dashboards
-- Additional physiological sensors
-- Improved accessibility
-- Validation with spaceflight-relevant datasets
-
----
-
-## 🗺️ Development Roadmap
-
-- [ ] Define system requirements
-- [ ] Design wearable device architecture
-- [ ] Select physiological sensors
-- [ ] Develop initial software prototype
-- [ ] Create health monitoring dashboard
-- [ ] Implement physiological data collection
-- [ ] Develop well-being assessment module
-- [ ] Implement local data storage
-- [ ] Integrate health analysis algorithms
-- [ ] Test sensor communication
-- [ ] Evaluate monitoring accuracy
-- [ ] Improve user interface
-- [ ] Conduct system validation
-- [ ] Prepare project demonstration
-
----
-
-## 👨‍🚀 Our Team
-
-We are a multidisciplinary team participating in the NASA International Space Apps Challenge 2026.
-
-Our goal is to combine technology, innovation, and scientific knowledge to develop solutions that contribute to the future of human space exploration.
-
-We believe that collaboration and creativity are essential for solving the challenges of living and working beyond Earth.
-
----
-
-## 🌎 NASA Space Apps Challenge 2026
-
-The NASA International Space Apps Challenge is a global innovation event that brings together participants from different backgrounds to develop solutions inspired by challenges involving space and Earth.
-
-Our project focuses on astronaut health monitoring and the development of technologies that support human well-being during space missions.
-
-### 🔗 Project Page
-
+**Official Project Page:**  
 [HEALTH — NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/find-a-team/health/?tab=project)
 
 ---
 
-## 📚 References
+# References
 
-- [NASA](https://www.nasa.gov/)
+- [NASA — Official Website](https://www.nasa.gov/)
 - [NASA Human Research Program](https://www.nasa.gov/hrp/)
-- [NASA Space Apps Challenge](https://www.spaceappschallenge.org/)
+- [NASA International Space Apps Challenge](https://www.spaceappschallenge.org/)
 - [NASA Open Data](https://data.nasa.gov/)
 
 ---
 
-## 📄 License
-
-This project is currently under development.
-
-Licensing information will be defined by the project team.
-
----
-
-<div align="center">
-
-## 🚀 HEALTH
-
-### Protecting Human Health Beyond Earth
-
-**NASA Space Apps Challenge 2026**
-
-*Innovation for the future of human space exploration.*
-
-🌍 Earth • 🌕 Moon • 🔴 Mars • 🚀 Beyond
-
-</div>
+**Developed for the NASA International Space Apps Challenge 2026.**
