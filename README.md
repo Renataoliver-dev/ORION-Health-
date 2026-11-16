@@ -654,6 +654,41 @@ Although additional validation is required before operational or clinical use, O
 **Source Code:**  
 [ORION Health Repository](https://github.com/lavynnemarianne13-alt/ORION-Health-)
 
+## <span style="color:#2B6CB0">5. Desenvolvedores e Colaboradores</span>
+
+O desenvolvimento técnico deste MVP foi realizado de forma colaborativa pela equipe de acadêmicos do projeto.
+
+<table align="center">
+  <tr>
+    <td align="center" width="180px">
+      <a href="https://github.com/Renataoliver-dev">
+        <img src="https://img.shields.io/badge/RO-Renata_Oliver-1A365D?style=for-the-badge&logo=github" alt="Renata Badge"><br><br>
+        <sub><b>@Renataoliver-dev</b></sub>
+      </a>
+    </td>
+    <td align="center" width="180px">
+      <a href="https://github.com/jota-dev1">
+        <img src="https://img.shields.io/badge/GH-jota--dev1-00562C?style=for-the-badge&logo=github" alt="jota-dev1 Badge"><br><br>
+        <sub><b>@jota-dev1</b></sub>
+      </a>
+    </td>
+    <td align="center" width="180px">
+      <a href="https://github.com/lavynnemarianne13-alt">
+        <img src="https://img.shields.io/badge/GH-lavynnemarianne13--alt-C05621?style=for-the-badge&logo=github" alt="lavynnemarianne13-alt Badge"><br><br>
+        <sub><b>@lavynnemarianne13-alt</b></sub>
+      </a>
+    </td>
+    <td align="center" width="180px">
+      <a href="https://github.com/IsabellyMonteiro-27">
+        <img src="https://img.shields.io/badge/GH-IsabellyMonteiro--27-6B46C1?style=for-the-badge&logo=github" alt="IsabellyMonteiro-27 Badge"><br><br>
+        <sub><b>@IsabellyMonteiro-27</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<br>
+
 **Official Project Page:**  
 [HEALTH — NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/find-a-team/health/?tab=project)
 
